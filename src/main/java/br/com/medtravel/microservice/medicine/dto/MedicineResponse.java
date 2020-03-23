@@ -6,6 +6,5 @@ import lombok.Data;
 public class MedicineResponse extends Medicine {
     private Long medicineId;
     private String image;
-    private Address addressInfo;
 
 }

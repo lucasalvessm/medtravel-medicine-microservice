@@ -24,7 +24,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("br.com.facil.medicine.microservice.medicine"))
+                .apis(RequestHandlerSelectors.basePackage("br.com.medtravel.microservice.medicine"))
                 .paths(PathSelectors.any())
                 .build()
                 .genericModelSubstitutes(ResponseEntity.class)
@@ -33,7 +33,7 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Medicine microservice from Medicine Facil Startup ")
+                .title("Medicine microservice from Medicine Startup ")
                 .description("Microservice responsible for maintain all medicine operations")
                 .version("1.0.0")
                 .build();

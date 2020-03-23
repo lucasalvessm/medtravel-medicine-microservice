@@ -11,4 +11,5 @@ public class ListResponse extends MedicineLight {
     @ApiModelProperty(required = true)
     @NotNull
     private Long medicineId;
+    private String imageBase64;
 }

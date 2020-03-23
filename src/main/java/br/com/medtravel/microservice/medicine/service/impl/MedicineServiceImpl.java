@@ -1,6 +1,9 @@
 package br.com.medtravel.microservice.medicine.service.impl;
 
-import br.com.medtravel.microservice.medicine.dto.*;
+import br.com.medtravel.microservice.medicine.dto.CreateRequest;
+import br.com.medtravel.microservice.medicine.dto.ListResponse;
+import br.com.medtravel.microservice.medicine.dto.MedicineResponse;
+import br.com.medtravel.microservice.medicine.dto.UpdateRequest;
 import br.com.medtravel.microservice.medicine.po.AddressPO;
 import br.com.medtravel.microservice.medicine.po.ImagePO;
 import br.com.medtravel.microservice.medicine.po.MedicinePO;
@@ -14,6 +17,8 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class MedicineServiceImpl implements MedicineService {
@@ -45,8 +50,10 @@ public class MedicineServiceImpl implements MedicineService {
     public MedicineResponse create(CreateRequest medicine) {
         var medicineToSave = (MedicinePO) ClassMapper.copyProperties(new MedicinePO(), medicine);
 
-        if (medicine.getAddressInfo() != null)
-            medicineToSave.setAddress((AddressPO) ClassMapper.copyProperties(new AddressPO(), medicine.getAddressInfo()));
+        if (medicine.getAddressInfo() != null && !medicine.getAddressInfo().isEmpty())
+            medicineToSave.setAddressList(medicine.getAddressInfo()
+                    .stream()
+                    .map(address -> (AddressPO) ClassMapper.copyProperties(new AddressPO(), medicine.getAddressInfo())).collect(Collectors.toList()));
 
         if (medicine.getImageBase64() != null)
             medicineToSave.setImage(new ImagePO(medicine.getImageBase64()));
@@ -61,8 +68,13 @@ public class MedicineServiceImpl implements MedicineService {
         medicineRepository
                 .findAll()
                 .iterator()
-                .forEachRemaining(medicinePO ->
-                        medicineList.add((ListResponse) ClassMapper.copyProperties(new ListResponse(), medicinePO)));
+                .forEachRemaining(medicinePO -> {
+                    ListResponse medicine = (ListResponse) ClassMapper.copyProperties(new ListResponse(), medicinePO);
+                    if (Objects.nonNull(medicinePO.getImage()))
+                        medicine.setImageBase64(medicinePO.getImage().getImageBase64());
+
+                    medicineList.add(medicine);
+                });
         return medicineList;
     }
 
@@ -70,10 +82,6 @@ public class MedicineServiceImpl implements MedicineService {
     public MedicineResponse getDetail(long id) {
         var medicine = medicineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         var medicineResponse = (MedicineResponse) ClassMapper.copyProperties(new MedicineResponse(), medicine);
-
-        if (medicine.getAddress() != null)
-            medicineResponse.setAddressInfo((br.com.medtravel.microservice.medicine.dto.Address)
-                    ClassMapper.copyProperties(new br.com.medtravel.microservice.medicine.dto.Address(), medicine.getAddress()));
 
         if (medicine.getImage() != null)
             medicineResponse

@@ -1,7 +1,6 @@
 package br.com.medtravel.microservice.medicine.service;
 
 
-import br.com.medtravel.microservice.medicine.dto.Address;
 import br.com.medtravel.microservice.medicine.dto.CreateRequest;
 import br.com.medtravel.microservice.medicine.dto.UpdateRequest;
 import br.com.medtravel.microservice.medicine.po.AddressPO;
@@ -42,9 +41,8 @@ public class MedicinePOServiceTest {
         medicine.setLeaflet("contra indicado em casos de suspeita de dengo");
         medicine.setCategoryId(1);
         medicine.setViewCount(22);
-        medicine.setValidOn('C');
         medicine.setImage(image);
-        medicine.setAddress(address);
+        medicine.setAddressList(Arrays.asList(address));
 
         image.setImageBase64("sdan1asdzzu12");
     }
@@ -63,8 +61,6 @@ public class MedicinePOServiceTest {
         when(medicineRepository.save(any())).thenReturn(medicine);
 
         var request = new CreateRequest();
-        request.setAddressInfo(new Address());
-        request.setImageBase64(image.getImageBase64());
         var medicineResponse = medicineService.create((CreateRequest) ClassMapper.copyProperties(request, medicine));
 
         assertEquals(request.getName(), medicineResponse.getName());
@@ -89,7 +85,6 @@ public class MedicinePOServiceTest {
         assertEquals(request.getComposition(), medicineResponse.getComposition());
         assertEquals(request.getPosology(), medicineResponse.getPosology());
         assertEquals(request.getLeaflet(), medicineResponse.getLeaflet());
-        assertEquals(request.getAddressInfo(), medicineResponse.getAddressInfo());
     }
 
     @Test
@@ -113,7 +108,6 @@ public class MedicinePOServiceTest {
     @Test
     public void getDetailSuccessfullyTest() {
         medicine.setImage(new ImagePO(""));
-        medicine.setAddress(new AddressPO());
         when(medicineRepository.findById(medicine.getMedicineId())).thenReturn(Optional.of(medicine));
 
         var medicineDetail = medicineService.getDetail(1L);

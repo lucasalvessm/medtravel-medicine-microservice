@@ -3,6 +3,7 @@ package br.com.medtravel.microservice.medicine.po;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -27,8 +28,10 @@ public class MedicinePO {
     private Integer categoryId;
     @Column(name = "CT_VIEW")
     private Integer viewCount;
-    @Column(name = "IN_VALID_ON")
-    private Character validOn;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn( name = "ID_IMAGE", referencedColumnName = "ID_IMAGE")
     private ImagePO image;
-    private AddressPO address;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn( name = "ID_MEDICINE", referencedColumnName = "ID_MEDICINE")
+    private List<AddressPO> addressList;
 }
